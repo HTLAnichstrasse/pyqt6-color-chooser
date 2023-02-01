@@ -20,6 +20,7 @@ class Window(QWidget):
         self.Button(self.red, self.green, self.blue)
         self.True_Color(self.true_color, self.red, self.green, self.blue)
         self.True_Button(self.true_color, self.red)
+        self.Check_Button()
 
     def True_Color(self, true_rgb, red, green, blue):
         first_digit = random.randint(0, len(blue) - 1)
@@ -32,6 +33,11 @@ class Window(QWidget):
             f"background-color:rgb({true_rgb[0]},{true_rgb[1]},{true_rgb[2]})")
         self.layout.addWidget(button, 0, len(red))
         print(f"{true_rgb}")
+
+
+    def Check_Button(self, true_rgb):
+        true_rgb =
+
 
     def Button(self, red, green, blue):
         # todo: check if some colors are duplicates
