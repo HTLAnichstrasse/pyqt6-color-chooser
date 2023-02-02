@@ -1,75 +1,79 @@
 import sys
 import random
-import time
-from PyQt6.QtWidgets import QApplication, QWidget, QGridLayout, QMessageBox, QLineEdit, QLabel, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QGridLayout, QMessageBox, QLineEdit, QLabel, QPushButton, QMainWindow
+
+# constants
+FIELD_X_COUNT = 3
+FIELD_Y_COUNT = 3
+WINDOW_HEIGHT = 500
+WINDOW_WIDTH = 500
 
 
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-        self.red = []
-        self.green = []
-        self.blue = []
-        self.true_color = []
+        self.rgb_correct = []
+        self.rgb = []
 
         self.layout = QGridLayout()
         self.layout.setContentsMargins(20, 20, 20, 20)
+        self.setFixedWidth(800)
+        self.setFixedHeight(700)
         self.setLayout(self.layout)
 
-        self.Title("Hello World")
-        self.Button(self.red, self.green, self.blue)
-        self.True_Color(self.true_color, self.red, self.green, self.blue)
-        self.True_Button(self.true_color, self.red)
-        self.Check_Button()
+        self.main_window_ui()
+        self.create_colors()
+        self.add_button()
+        self.correct_color()
 
-    def True_Color(self, true_rgb, red, green, blue):
-        first_digit = random.randint(0, len(blue) - 1)
-        second_digit = random.randint(0, len(blue[first_digit]) - 1)
-        true_rgb += red[first_digit][second_digit], green[first_digit][second_digit], blue[first_digit][second_digit]
+    def main_window_ui(self):
+        self.setWindowTitle("Color Chooser")
+        self.setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 
-    def True_Button(self, true_rgb, red):
-        button = QPushButton()
-        button.setStyleSheet(
-            f"background-color:rgb({true_rgb[0]},{true_rgb[1]},{true_rgb[2]})")
-        self.layout.addWidget(button, 0, len(red))
-        print(f"{true_rgb}")
+    def correct_color(self):
+        self.rgb_correct = self.rgb[random.randint(0, len(self.rgb) - 1)][random.randint(0, len(self.rgb[0]) - 1)]
+        return self.rgb_correct
 
-
-    def Check_Button(self, true_rgb):
-        true_rgb =
-
-
-    def Button(self, red, green, blue):
-        # todo: check if some colors are duplicates
-        for i in range(0, 5, 1):
-            red_temp = []
-            green_temp = []
-            blue_temp = []
-            for j in range(0, 5, 1):
-
-                red_temp.append(random.randint(0, 254))
-                green_temp.append(random.randint(0, 254))
-                blue_temp.append(random.randint(0, 254))
-
+    def add_button(self):
+        for x in range(0, FIELD_Y_COUNT, 1):
+            for y in range(0, FIELD_X_COUNT, 1):
                 button = QPushButton()
                 button.setStyleSheet(
-                    f"background-color:rgb({red_temp[j]},{green_temp[j]},{blue_temp[j]})")
-                self.layout.addWidget(button, i, j)
+                    f"background-color:rgb({self.rgb[x][y][0]},{self.rgb[x][y][1]},{self.rgb[x][y][2]})")
+                button.setFixedHeight(WINDOW_WIDTH // FIELD_X_COUNT)
+                button.setFixedHeight(WINDOW_HEIGHT // FIELD_Y_COUNT)
 
-            red.append(red_temp)
-            green.append(green_temp)
-            blue.append(blue_temp)
+                self.layout.addWidget(button, x, y)
 
-    def Title(self, title):
-        self.setWindowTitle(title)
+    def create_colors(self):
+        for x in range(0, FIELD_Y_COUNT, 1):
+            temp = []
+            for y in range(0, FIELD_X_COUNT, 1):
+                tmp = []
+                for three_colors in range(0, 3, 1):
+                    tmp.append(random.randint(0, 255))
+
+                duplicate = self.check_duplicate_in_array(tmp)
+                if duplicate:
+                    y -= 1
+                else:
+                    temp.append(tmp)
+
+            self.rgb.append(temp)
+
+    def check_duplicate_in_array(self, arr):
+        for element in self.rgb:
+            for e in element:
+                if arr != e:
+                    return 0
+                else:
+                    return 1
+
 
 def main():
     app = QApplication(sys.argv)
-    window = Window()
-    # print(f"red: {window.red}")
-    # print(f"true_color: {window.true_color}")
+    Window().show()
 
-    window.show()
     sys.exit(app.exec())
 
 
