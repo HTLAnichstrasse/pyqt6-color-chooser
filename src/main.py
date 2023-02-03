@@ -1,6 +1,6 @@
 import sys
 import random
-import math
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QWidget, QGridLayout, QMessageBox, QLineEdit, QLabel, QPushButton, \
     QMainWindow, QFileDialog, QVBoxLayout, QMenu, QMenuBar
 
@@ -11,12 +11,8 @@ WINDOW_HEIGHT = 400
 WINDOW_WIDTH = 800
 
 
-# todo: convert rgb & buttons from list to dict
-# lugas: eine color-Funktion, die für EINEN button EINE color erstellt => & dabei schaut, ob de color schon mal in an
-# anderen element vom dict ist
 # todo: Difficulties: Easy(2|2) Medium(3|3) Hard(4|4) Impossible(5|5)
 # todo: implement correct color-guess
-# todo: implement try's
 # todo: save game & load game
 
 
@@ -24,16 +20,18 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
         self.layout = QGridLayout()
+
         self.buttons = {}
         self.correct_color = []
-
-        self.run()
+        self.tries = 0
+        self.tries_label = None
 
     def run(self):
         self.window_ui()
         self.create_guess_buttons()
         self.get_correct_color()
         self.create_correct_button()
+        self.create_tries_button()
         self.check_clicked_button()
 
     def window_ui(self):
@@ -82,7 +80,7 @@ class Window(QWidget):
             if self.buttons[ele] == self.correct_color:
                 ele.clicked.connect(lambda: print("correct"))
             else:
-                ele.clicked.connect(lambda: print("incorrect"))
+                ele.clicked.connect(lambda: self.update_tries_button())
 
     # --- create correct button ---
 
@@ -90,14 +88,24 @@ class Window(QWidget):
         button = QPushButton("True Color")
 
         button.setStyleSheet(
-            f"background-color:rgb({self.correct_color[0]}, {self.correct_color[1]}, {self.correct_color[2]})")
+            f"font-size: 18px; background-color:rgb({self.correct_color[0]}, {self.correct_color[1]},"
+            f" {self.correct_color[2]})")
         button.setFixedSize((400 - 50), (200 - 50))
 
-        font = button.font()
-        font.setPointSize(18)
-        button.setFont(font)
-
         self.layout.addWidget(button, 0, FIELD_X_COUNT + 1)
+
+    # --- create tries button ---
+    def create_tries_button(self):
+        self.tries_label = QLabel(f"Tries: {self.tries}")
+
+        self.tries_label.setStyleSheet("font-size: 18px")
+        self.tries_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.tries_label, 1, FIELD_X_COUNT + 1)
+
+    def update_tries_button(self):
+        self.tries += 1
+        print(self.tries)
+        self.tries_label.setText(f"Tries: {self.tries}")
 
     # --------------------------------------------------------------------------------
 
@@ -107,6 +115,7 @@ def main():
 
     window = Window()
     window.show()
+    window.run()
 
     try:
         app.exec()
