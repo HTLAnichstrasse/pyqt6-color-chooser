@@ -11,6 +11,7 @@ WINDOW_HEIGHT = 400
 WINDOW_WIDTH = 800
 
 
+# todo: convert rgb & buttons from list to dict
 # todo: Difficulties: Easy(2|2) Medium(3|3) Hard(4|4) Impossible(5|5)
 # todo: implement correct color-guess
 # todo: implement try's
@@ -22,6 +23,7 @@ class Button(QWidget):
         super().__init__()
 
         self.rgb_correct = []
+        self.buttons = {}
         self.rgb = []
 
         self.layout = QGridLayout()
@@ -30,6 +32,7 @@ class Button(QWidget):
         self.create_colors()
         self.add_button()
         self.correct_color_button()
+        self.check_color_on_click()
 
     def window_ui(self):
         self.layout.setContentsMargins(20, 20, 20, 20)
@@ -54,6 +57,16 @@ class Button(QWidget):
         self.rgb_correct = self.rgb[random.randint(0, len(self.rgb) - 1)][random.randint(0, len(self.rgb[0]) - 1)]
         return self.rgb_correct
 
+    def check_color_on_click(self):
+        for element in self.buttons:
+            if self.buttons[element] == self.rgb_correct:
+                element.clicked.connect(lambda: self.correct_color_clicked())
+            else:
+                element.clicked.connect(lambda: print(f"incorrect"))
+
+    def correct_color_clicked(self):
+        print(f"correct")
+
     def add_button(self):
         for x in range(0, FIELD_Y_COUNT, 1):
             for y in range(0, FIELD_X_COUNT, 1):
@@ -63,6 +76,7 @@ class Button(QWidget):
                 button.setFixedSize((WINDOW_WIDTH - 50) // (FIELD_X_COUNT * 2),
                                     (WINDOW_HEIGHT - 50) // FIELD_Y_COUNT)
 
+                self.buttons[button] = self.rgb[x][y]
                 self.layout.addWidget(button, x, y)
 
     def create_colors(self):
