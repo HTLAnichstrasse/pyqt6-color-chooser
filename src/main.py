@@ -12,7 +12,6 @@ WINDOW_WIDTH = 800
 
 
 # todo: Difficulties: Easy(2|2) Medium(3|3) Hard(4|4) Impossible(5|5)
-# todo: implement correct color-guess
 # todo: save game & load game
 
 
@@ -25,13 +24,14 @@ class Window(QWidget):
         self.correct_color = []
         self.tries = 0
         self.tries_label = None
+        self.correct_color_button = None
 
     def run(self):
         self.window_ui()
         self.create_guess_buttons()
         self.get_correct_color()
         self.create_correct_button()
-        self.create_tries_button()
+        self.create_tries_counter()
         self.check_clicked_button()
 
     def window_ui(self):
@@ -65,7 +65,6 @@ class Window(QWidget):
         self.layout.addWidget(button, x, y)
 
     def create_guess_buttons(self):
-        # button_type = "guess_button"
         for x in range(FIELD_X_COUNT):
             for y in range(FIELD_Y_COUNT):
                 self.create_single_guess_button(x, y)
@@ -75,37 +74,53 @@ class Window(QWidget):
         self.correct_color = random.choice(list(self.buttons.values()))
 
     def check_clicked_button(self):
-        # self.correct_color = random.choice(list(self.buttons.values()))
         for ele in self.buttons:
             if self.buttons[ele] == self.correct_color:
-                ele.clicked.connect(lambda: print("correct"))
+                ele.clicked.connect(lambda: self.render_new_game_field())
             else:
-                ele.clicked.connect(lambda: self.update_tries_button())
+                ele.clicked.connect(lambda: self.update_tries_on_click("set"))
 
     # --- create correct button ---
 
     def create_correct_button(self):
-        button = QPushButton("True Color")
+        self.correct_color_button = QPushButton("True Color")
 
-        button.setStyleSheet(
+        self.correct_color_button.setStyleSheet(
             f"font-size: 18px; background-color:rgb({self.correct_color[0]}, {self.correct_color[1]},"
             f" {self.correct_color[2]})")
-        button.setFixedSize((400 - 50), (200 - 50))
+        self.correct_color_button.setFixedSize((400 - 50), (200 - 50))
 
-        self.layout.addWidget(button, 0, FIELD_X_COUNT + 1)
+        self.layout.addWidget(self.correct_color_button, 0, FIELD_X_COUNT + 1)
 
     # --- create tries button ---
-    def create_tries_button(self):
+    def create_tries_counter(self):
         self.tries_label = QLabel(f"Tries: {self.tries}")
 
         self.tries_label.setStyleSheet("font-size: 18px")
         self.tries_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.tries_label, 1, FIELD_X_COUNT + 1)
 
-    def update_tries_button(self):
-        self.tries += 1
-        print(self.tries)
-        self.tries_label.setText(f"Tries: {self.tries}")
+    def update_tries_on_click(self, _type):
+        if _type == "set":
+            self.tries += 1
+            self.tries_label.setText(f"Tries: {self.tries}")
+        elif _type == "reset":
+            self.tries = 0
+            self.tries_label.setText(f"Tries: {self.tries}")
+
+    # --- render new field on win ---
+    def render_new_game_field(self):
+        self.buttons = {}
+
+        self.update_tries_on_click("reset")
+        self.create_guess_buttons()
+        self.get_correct_color()
+
+        self.correct_color_button.setStyleSheet(
+            f"font-size: 18px; background-color:rgb({self.correct_color[0]}, {self.correct_color[1]},"
+            f" {self.correct_color[2]})")
+
+        self.check_clicked_button()
 
     # --------------------------------------------------------------------------------
 
