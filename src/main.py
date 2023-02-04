@@ -31,7 +31,7 @@ class Window(QWidget):
         self.create_guess_buttons()
         self.get_correct_color()
         self.create_correct_button()
-        self.create_tries_counter()
+        self.create_tries_label()
         self.check_clicked_button()
 
     def window_ui(self):
@@ -47,7 +47,6 @@ class Window(QWidget):
             if self.buttons[ele] == color:
                 color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
                 self.check_for_color_duplicates(color)
-                print("duplicate")
 
     def create_color_for_button(self, button):
         color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
@@ -76,7 +75,7 @@ class Window(QWidget):
     def check_clicked_button(self):
         for ele in self.buttons:
             if self.buttons[ele] == self.correct_color:
-                ele.clicked.connect(lambda: self.render_new_game_field())
+                ele.clicked.connect(lambda: self.render_new_game())
             else:
                 ele.clicked.connect(lambda: self.update_tries_on_click("set"))
 
@@ -93,7 +92,7 @@ class Window(QWidget):
         self.layout.addWidget(self.correct_color_button, 0, FIELD_X_COUNT + 1)
 
     # --- create tries button ---
-    def create_tries_counter(self):
+    def create_tries_label(self):
         self.tries_label = QLabel(f"Tries: {self.tries}")
 
         self.tries_label.setStyleSheet("font-size: 18px")
@@ -108,8 +107,8 @@ class Window(QWidget):
             self.tries = 0
             self.tries_label.setText(f"Tries: {self.tries}")
 
-    # --- render new field on win ---
-    def render_new_game_field(self):
+    # --- render new game on win ---
+    def render_new_game(self):
         self.buttons = {}
 
         self.update_tries_on_click("reset")
@@ -121,7 +120,7 @@ class Window(QWidget):
             f" {self.correct_color[2]})")
 
         self.check_clicked_button()
-
+        
     # --------------------------------------------------------------------------------
 
 
