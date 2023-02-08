@@ -4,9 +4,8 @@ import random
 
 from PyQt6.QtGui import QIcon, QAction
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QWidget, QGridLayout, QMessageBox, QLineEdit, QLabel, QPushButton, \
-    QMainWindow, QFileDialog, QVBoxLayout, QMenu, QMenuBar, QToolBar, QStatusBar
-from PyQt6.uic.properties import QtGui
+from PyQt6.QtWidgets import QApplication, QWidget, QGridLayout, QMessageBox, QLabel, QPushButton, QMainWindow, \
+    QFileDialog
 
 # constants
 DIFFICULTIES = {
@@ -19,12 +18,9 @@ WINDOW_HEIGHT = 400
 WINDOW_WIDTH = 800
 
 
-# todo: implement icons to display save and load options nicely - currently the save & load option is just an empty
-#  gray icon
-# todo: write cards and navbar in a separate class object
-# todo: also write an class for every grid layout and then add it to the window_handler function
-# todo: Difficulties: Easy(2|2) Medium(3|3) Hard(4|4) Impossible(5|5)
-# todo: save game & load game
+# todo: make more classes (currently just two)
+# todo: fix displaying issue with alignment / margin / padding
+# todo: still have to display that win-pop-up (QMessageBox)
 
 
 class Window(QWidget):
@@ -64,7 +60,7 @@ class Window(QWidget):
                 color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
                 self.check_for_color_duplicates(color)
 
-    def create_color_for_button(self, button) -> None:
+    def create_color_for_button(self, button: QPushButton) -> None:
         color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         self.check_for_color_duplicates(color)
         self.buttons[button] = color
@@ -149,8 +145,6 @@ class Window(QWidget):
         self.active_difficulty = _difficulty
         self.tries_label.setText(f"Tries: {_tries}")
 
-        print(type(_difficulty), type(_tries))
-
         self.reset_buttons()
         self.buttons = {}
 
@@ -163,19 +157,11 @@ class Window(QWidget):
 
         self.check_clicked_button()
 
-        # self.update_tries_on_click("set")
-        # self.get_correct_color()
-        #
-        # self.correct_color_button.setStyleSheet(
-        #     f"font-size: 18px; background-color:rgb({self.correct_color[0]}, {self.correct_color[1]},"
-        #     f" {self.correct_color[2]})")
-        #
-        # self.check_clicked_button()
-
     # --------------------------------------------------------------------------------
     # --------------------------------------------------------------------------------
 
 
+# todo: re-comment this section here
 class MainWindow(QMainWindow):
     def __init__(self, window):
         super().__init__()
@@ -218,6 +204,7 @@ class MainWindow(QMainWindow):
                 # file.write(f"{window.tries}\n")
 
         except FileNotFoundError:
+            print("file not found")
             self.close_main_window()
 
     def read_from_file(self, filename) -> list:
@@ -227,6 +214,7 @@ class MainWindow(QMainWindow):
 
         except FileNotFoundError:
             print("file not found")
+            self.close_main_window()
 
     # --- file handling ---
 
@@ -251,8 +239,6 @@ class MainWindow(QMainWindow):
         self.write_in_file(filename, window)
 
     def menu_bar(self, window) -> None:
-        # self.setStyleSheet("background-color:rgb(230, 230, 230)")
-
         menu_file = self.menu.addMenu("&File")
         menu_file.addSeparator()
 
@@ -286,11 +272,8 @@ class MainWindow(QMainWindow):
                 impossible = DIFFICULTIES[ele][0]
                 DIFFICULTIES[ele][1].triggered.connect(lambda: window.render_new_game(impossible))
 
-    # --------------------------------------------------------------------------------
-    # --------------------------------------------------------------------------------
 
-
-def window_handler():
+def window_handler() -> None:
     app = QApplication(sys.argv)
 
     window = Window()
